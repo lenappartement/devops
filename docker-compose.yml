@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+    backend:
+        build:
+          context: ./
+          dockerfile: Backend.Dockerfile
+        networks:
+        - app-network
+        environment:
+        - DB_NAME=${DB_NAME}
+        - DB_HOST=${DB_HOST}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
+        depends_on:
+        - database
+        env_file: ".env"
+
+    database:
+        build:
+          context: ./
+          dockerfile: Database.Dockerfile
+        ports:
+        - 5432:5432
+        environment:
+        - POSTGRES_DB=${DB_NAME}
+        - POSTGRES_USER=${DB_USER}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
+        networks:
+        - app-network
+        volumes:
+        - /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data
+        env_file: ".env"
+
+    frontend:
+        build:
+          context: ./
+          dockerfile: Frontend.Dockerfile
+        ports:
+        - 80:80
+        networks:
+        - app-network
+        depends_on:
+        - backend
+
+networks:
+    app-network:

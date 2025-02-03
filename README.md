@@ -7,7 +7,7 @@ Le flag -e permet de sécuriser la connexion à la base en évitant d'écrire en
 Le volume permet de sauvegarder l'état de la base de données (tables créées, données ajoutées..). Ainsi les données ne sont pas perdues lorsqu'on éteint et redémarre le container.
 
 ## 1-3 Document your database container essentials: commands and Dockerfile.
-```
+```bash
 docker build -t lenappartement/database .
 
 docker run -d --name database --network app-network -e POSTGRES_DB=db -e POSTGRES_USER=usr -e POSTGRES_PASSWORD=pwd -v /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data -P lenappartement/database
@@ -18,11 +18,21 @@ docker rm -f database
 docker rm -f adminer
 ```
 
+Dockerfile :
+```docker
+FROM postgres:14.1-alpine
+
+EXPOSE 5432
+
+COPY CreateScheme.sql /docker-entrypoint-initdb.d
+COPY InsertData.sql /docker-entrypoint-initdb.d
+```
+
 ## 1-4 Why do we need a multistage build? And explain each step of this dockerfile.
 Le multistage build permet de réduire la taille de l'image docker finale. On va dans un premier temps compiler les fichiers, puis copier uniquement les fichiers compiler dans l'image finale. Ainsi l'image aura une taille réduite.
 
 Description du dockerfile :
-```
+```docker
 # On utilise amazoncorretto avec maven pour compiler le projet 
 FROM maven:3.9.9-amazoncorretto-21 AS myapp-build
 # Répertoire où sera stocké le projet
@@ -45,3 +55,72 @@ COPY --from=myapp-build $MYAPP_HOME/target/*.jar $MYAPP_HOME/myapp.jar
 
 ## 1-5 Why do we need a reverse proxy?
 Un reverse proxy permet d'assurer la sécurité en masquant l'adresse ip du serveur backend. Cela permet aussi de chiffrer la communication entre le front et le back. Dans le cas où l'on a plusieurs serveurs backend on peut aussi se servir du reverse proxy pour rediriger sur les différents serveurs et assurer la haute disponibilité avec le load balancing.
+
+## 1-6 Why is docker-compose so important?
+Il permet un gain de temps. L'ensemble des commandes sont réalisées en une seule, on peut build et démarrer les containers en 2 commandes :
+- docker-compose build
+- docker-compose up
+
+## 1-7 Document docker-compose most important commands. 
+- docker-compose build
+- docker-compose up
+- docker-compose up --build
+- docker-compose down
+
+## 1-8 Document your docker-compose file.
+```yaml
+version: '3.7'
+
+services:
+    backend:
+        build:
+          context: ./
+          dockerfile: Backend.Dockerfile
+        networks:
+        - app-network
+        depends_on:
+        - database
+
+    database:
+        build:
+          context: ./
+          dockerfile: Database.Dockerfile
+        ports:
+        - 5432:5432
+        environment:
+        - POSTGRES_DB=db
+        - POSTGRES_USER=usr
+        - POSTGRES_PASSWORD=pwd
+        networks:
+        - app-network
+        volumes:
+        - /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data
+
+    frontend:
+        build:
+          context: ./
+          dockerfile: Frontend.Dockerfile
+        ports:
+        - 80:80
+        networks:
+        - app-network
+        depends_on:
+        - backend
+
+networks:
+    app-network:
+```
+
+## 1-9 Document your publication commands and published images in dockerhub.
+Création des tag :
+- docker tag lenappartement/frontend lenappartement/frontend:1.0
+- docker tag lenappartement/backend lenappartement/backend:1.0
+- docker tag lenappartement/database lenappartement/database:1.0
+
+Publication :
+- docker push lenappartement/frontend:1.0
+- docker push lenappartement/backend:1.0
+- docker push lenappartement/database:1.0
+
+## 1-10 Why do we put our images into an online repo?
+Cela permet de les partager avec d'autres personnes, de pouvoir y accéder depuis n'importe où et de gérer les différentes versions du container.
