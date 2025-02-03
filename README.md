@@ -42,3 +42,6 @@ WORKDIR $MYAPP_HOME
 # On copie depuis la première image, uniquement le dossier compilé .jar
 COPY --from=myapp-build $MYAPP_HOME/target/*.jar $MYAPP_HOME/myapp.jar
 ```
+
+## 1-5 Why do we need a reverse proxy?
+Un reverse proxy permet d'assurer la sécurité en masquant l'adresse ip du serveur backend. Cela permet aussi de chiffrer la communication entre le front et le back. Dans le cas où l'on a plusieurs serveurs backend on peut aussi se servir du reverse proxy pour rediriger sur les différents serveurs et assurer la haute disponibilité avec le load balancing.
