@@ -44,7 +44,7 @@ jobs:
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./backend
-          dockerfile: Backend.Dockerfile
+          file: Backend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/backend:latest
           push: ${{ github.ref == 'refs/heads/main' }}
@@ -54,7 +54,7 @@ jobs:
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./database
-          dockerfile: Database.Dockerfile
+          file: Database.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/database:latest
           push: ${{ github.ref == 'refs/heads/main' }}
@@ -64,6 +64,6 @@ jobs:
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./frontend
-          dockerfile: Frontend.Dockerfile
+          file: Frontend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/frontend:latest
