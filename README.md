@@ -170,4 +170,4 @@ Dans le `pom.xml`, on ajoute ces deux lignes pour lier à notre organisation :
 ```yml
 <sonar.organization>lenadevops</sonar.organization>
 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-```
+``` 
