@@ -2,8 +2,8 @@
 FROM maven:3.9.9-amazoncorretto-21 AS myapp-build
 ENV MYAPP_HOME=/opt/myapp 
 WORKDIR $MYAPP_HOME
-COPY simpleapi/pom.xml .
-COPY simpleapi/src ./src
+COPY pom.xml .
+COPY src ./src
 RUN mvn package -DskipTests
 
 # Run

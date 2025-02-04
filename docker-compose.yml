@@ -3,7 +3,7 @@ version: '3.7'
 services:
     backend:
         build:
-          context: ./
+          context: ./backend
           dockerfile: Backend.Dockerfile
         networks:
         - app-network
@@ -18,7 +18,7 @@ services:
 
     database:
         build:
-          context: ./
+          context: ./database
           dockerfile: Database.Dockerfile
         ports:
         - 5432:5432
@@ -34,7 +34,7 @@ services:
 
     frontend:
         build:
-          context: ./
+          context: ./frontend
           dockerfile: Frontend.Dockerfile
         ports:
         - 80:80
