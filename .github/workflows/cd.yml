@@ -22,7 +22,7 @@ jobs:
         run: docker login -u ${{ github.actor }} -p ${{ secrets.DOCKER_TOKEN }}
 
       - name: Numero version
-        run: echo "VERSION=(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --file backend/pom.xml)" >> $GITHUB_ENV
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --file backend/pom.xml)" >> $GITHUB_ENV
 
 
       - name: Build image and push backend
