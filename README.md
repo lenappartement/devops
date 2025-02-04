@@ -137,7 +137,7 @@ on:
     branches: 
       - main
       - develop
-  pull_request:
+  pull_request: 
 
 jobs:
   test-backend: 
