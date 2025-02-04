@@ -28,6 +28,7 @@ jobs:
 
   # define job to build and publish docker image
   build-and-push-docker-image:
+    if: github.ref == 'refs/heads/main'  # Exécuter uniquement sur la branche main
     needs: test-backend
     # run only when code is compiling and tests are passing
     runs-on: ubuntu-22.04
@@ -48,7 +49,7 @@ jobs:
           file: ./backend/Backend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/backend:latest
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
 
       - name: Build image and push database
         uses: docker/build-push-action@v3
@@ -58,7 +59,7 @@ jobs:
           file: ./database/Database.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/database:latest
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
 
       - name: Build image and push httpd
         uses: docker/build-push-action@v3
@@ -68,3 +69,4 @@ jobs:
           file: ./frontend/Frontend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/frontend:latest
+          push: true

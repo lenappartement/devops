@@ -160,3 +160,14 @@ jobs:
 
 ## 2-3 For what purpose do we need to push docker images?
 Cela permet de mettre à jour nos images sur le docker hub, cela peut servir si on partage nos images avec d'autres personnes, ou afin de déployer une version à jour tout simplement.
+
+## 2-4 Document your quality gate configuration.
+```yml
+run: mvn -B verify sonar:sonar -Dsonar.projectKey=lenappartement_devops -Dsonar.organization=lenadevops -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }}  --file ./backend/pom.xml
+
+```
+Dans le `pom.xml`, on ajoute ces deux lignes pour lier à notre organisation :
+```yml
+<sonar.organization>lenadevops</sonar.organization>
+<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+```
