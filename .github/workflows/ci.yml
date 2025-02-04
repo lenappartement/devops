@@ -27,5 +27,5 @@ jobs:
      #finally build your app with the latest command
       - name: Build and test with Maven
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=lenappartement_devops -Dsonar.organization=lenadevops -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }}  --file ./backend/pom.xml
-      - name: Fail intentionally
-        run: exit 1
+      #- name: Fail intentionally
+      #  run: exit 1
