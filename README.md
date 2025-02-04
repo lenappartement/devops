@@ -124,3 +124,7 @@ Publication :
 
 ## 1-10 Why do we put our images into an online repo?
 Cela permet de les partager avec d'autres personnes, de pouvoir y accéder depuis n'importe où et de gérer les différentes versions du container.
+
+## 2-1 What are testcontainers?
+Ce sont des containeurs d'une librairie java. Ils permettent de lancer des tests sur différentes parties du projet lors du lancement de la commande `mvn clean verify`. Dans notre projet il y en a un pour postgresql et jdbc afin de valider que la connexion à la base de données est correcte.
+
