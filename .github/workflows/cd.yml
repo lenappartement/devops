@@ -32,7 +32,7 @@ jobs:
           context: ./backend
           file: ./backend/Backend.Dockerfile
           # Note: tags has to be all lower-case
-          tags:  ${{github.actor}}/backend:latest
+          tags:  ${{github.actor}}/backend:latest ,
                  ${{ github.actor }}/backend:${{ env.VERSION }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
@@ -43,7 +43,7 @@ jobs:
           context: ./database
           file: ./database/Database.Dockerfile
           # Note: tags has to be all lower-case
-          tags:  ${{github.actor}}/database:latest
+          tags:  ${{github.actor}}/database:latest ,
                  ${{ github.actor }}/database:${{ env.VERSION }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
@@ -54,6 +54,6 @@ jobs:
           context: ./frontend
           file: ./frontend/Frontend.Dockerfile
           # Note: tags has to be all lower-case
-          tags:  ${{github.actor}}/frontend:latest
+          tags:  ${{github.actor}}/frontend:latest ,
                  ${{ github.actor }}/frontend:${{ env.VERSION }}
           push: ${{ github.ref == 'refs/heads/main' }}
