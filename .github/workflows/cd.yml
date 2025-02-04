@@ -1,8 +1,5 @@
 name: CD
 on:
-  push:
-    branches:
-      - main
   workflow_run:
     workflows: ["CI"]
     types:
@@ -30,7 +27,7 @@ jobs:
           file: ./backend/Backend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/backend:latest
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push database
         uses: docker/build-push-action@v3
@@ -40,7 +37,7 @@ jobs:
           file: ./database/Database.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/database:latest
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push httpd
         uses: docker/build-push-action@v3
@@ -50,4 +47,4 @@ jobs:
           file: ./frontend/Frontend.Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/frontend:latest
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
