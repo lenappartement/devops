@@ -1,19 +1,23 @@
 # Compte rendu
 
 ## 1.1 Why should we run the container with a flag -e to give the environment variables?
-Le flag -e permet de sécuriser la connexion à la base en évitant d'écrire en dur dans un fichier les mots de passe et identifiants de la BDD.
+Le flag -e permet de sécuriser la connexion à la base en évitant d'écrire en dur dans un fichier les mots de passe et identifiants de la BDD. On peut faire passer les différentes variables d'environnement avec ce flag.
 
 ## 1-2 Why do we need a volume to be attached to our postgres container?
 Le volume permet de sauvegarder l'état de la base de données (tables créées, données ajoutées..). Ainsi les données ne sont pas perdues lorsqu'on éteint et redémarre le container.
 
 ## 1-3 Document your database container essentials: commands and Dockerfile.
 ```bash
+# Pour build une image
 docker build -t lenappartement/database .
 
+# Run le container avec l'image de la database, passe les paramètres avec -e, le network et utilisation d'un volume
 docker run -d --name database --network app-network -e POSTGRES_DB=db -e POSTGRES_USER=usr -e POSTGRES_PASSWORD=pwd -v /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data -P lenappartement/database
 
+# Run le container adminer sur le même network que la database, on mappe sur le port 8080
 docker run -d --name adminer --network app-network -p 8080:8080 adminer
 
+# Supprime et éteint les containers
 docker rm -f database
 docker rm -f adminer
 ```
@@ -22,14 +26,16 @@ Dockerfile :
 ```docker
 FROM postgres:14.1-alpine
 
+# Expose le port de la BDD
 EXPOSE 5432
 
+# Copie les fichiers sql pour charger le schéma et les data dans la base
 COPY CreateScheme.sql /docker-entrypoint-initdb.d
 COPY InsertData.sql /docker-entrypoint-initdb.d
 ```
 
 ## 1-4 Why do we need a multistage build? And explain each step of this dockerfile.
-Le multistage build permet de réduire la taille de l'image docker finale. On va dans un premier temps compiler les fichiers, puis copier uniquement les fichiers compiler dans l'image finale. Ainsi l'image aura une taille réduite.
+Le multistage build permet de réduire la taille de l'image docker finale. On va dans un premier temps compiler les fichiers, puis copier uniquement les fichiers compiler dans l'image finale. Ainsi l'image finale aura une taille réduite.
 
 Description du dockerfile :
 ```docker
@@ -58,14 +64,15 @@ Un reverse proxy permet d'assurer la sécurité en masquant l'adresse ip du serv
 
 ## 1-6 Why is docker-compose so important?
 Il permet un gain de temps. L'ensemble des commandes sont réalisées en une seule, on peut build et démarrer les containers en 2 commandes :
-- docker-compose build
-- docker-compose up
+- `docker-compose build`
+- `docker-compose up`
+Ou bien avec la commande `docker-compose up --build` directement
 
 ## 1-7 Document docker-compose most important commands. 
-- docker-compose build
-- docker-compose up
-- docker-compose up --build
-- docker-compose down
+- `docker-compose build`
+- `docker-compose up`
+- `docker-compose up --build`
+- `docker-compose down`
 
 ## 1-8 Document your docker-compose file.
 ```yaml
@@ -74,39 +81,56 @@ version: '3.7'
 services:
     backend:
         build:
-          context: ./
+          # Dossier où se trouve le dockerfile
+          context: ./backend
+          # Nom du dockerfile
           dockerfile: Backend.Dockerfile
         networks:
         - app-network
+        # Variables d'environnement de connexion à la BDD
+        environment:
+        - DB_NAME=${DB_NAME}
+        - DB_HOST=${DB_HOST}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
+        # Le backend doit se lancer après la database
         depends_on:
         - database
+        # Fichier avec les variables d'environnement
+        env_file: ".env"
 
     database:
         build:
-          context: ./
+          context: ./database
           dockerfile: Database.Dockerfile
+        # On mappe le port 5432 sur le port 5432
         ports:
         - 5432:5432
         environment:
-        - POSTGRES_DB=db
-        - POSTGRES_USER=usr
-        - POSTGRES_PASSWORD=pwd
+        - POSTGRES_DB=${DB_NAME}
+        - POSTGRES_USER=${DB_USER}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
         networks:
         - app-network
+        # Volume où sont stockées les données de la base
         volumes:
         - /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data
+        env_file: ".env"
 
     frontend:
         build:
-          context: ./
+          context: ./frontend
           dockerfile: Frontend.Dockerfile
+        # On mappe le port 80 sur le port 80
         ports:
         - 80:80
         networks:
         - app-network
+        # Le frontend doit se lancer après le backend
         depends_on:
         - backend
 
+# Network
 networks:
     app-network:
 ```
@@ -171,3 +195,5 @@ Dans le `pom.xml`, on ajoute ces deux lignes pour lier à notre organisation :
 <sonar.organization>lenadevops</sonar.organization>
 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 ``` 
+
+Pour récupérer la version du projet du pom.xml : `mvn help:evaluate -Dexpression=project.version -q -DforceStdout --file backend/pom.xml`
