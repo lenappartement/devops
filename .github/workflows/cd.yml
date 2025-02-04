@@ -43,7 +43,7 @@ jobs:
           context: ./database
           file: ./database/Database.Dockerfile
           # Note: tags has to be all lower-case
-          tags:  ${{github.actor}}/database:latest ,
+          tags:  ${{github.actor}}/database:latest , 
                  ${{ github.actor }}/database:${{ env.VERSION }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
