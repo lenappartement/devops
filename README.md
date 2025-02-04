@@ -128,3 +128,35 @@ Cela permet de les partager avec d'autres personnes, de pouvoir y accéder depui
 ## 2-1 What are testcontainers?
 Ce sont des containeurs d'une librairie java. Ils permettent de lancer des tests sur différentes parties du projet lors du lancement de la commande `mvn clean verify`. Dans notre projet il y en a un pour postgresql et jdbc afin de valider que la connexion à la base de données est correcte.
 
+## 2-2 Document your Github Actions configurations.
+```yml
+name: CI devops 2025
+on:
+  # Lance les tests sur les branches main et develop
+  push:
+    branches: 
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  test-backend: 
+    runs-on: ubuntu-22.04
+    steps:
+     # Récupère les fichiers avec un git checkout
+      - uses: actions/checkout@v2.5.0
+
+     # Met en place java avec la distribution et version choisie
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+     # Build le projet avec maven le fichier de config pom.xml
+      - name: Build and test with Maven
+        run: mvn clean verify --file backend/pom.xml
+```
+
+## 2-3 For what purpose do we need to push docker images?
+Cela permet de mettre à jour nos images sur le docker hub, cela peut servir si on partage nos images avec d'autres personnes, ou afin de déployer une version à jour tout simplement.
