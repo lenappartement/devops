@@ -1,0 +1,9 @@
+---
+# tasks file for roles/frontend
+- name: Start frontend
+  docker_container:
+    name: front-main
+    image: lenappartement/front-main:latest
+    pull: yes # Permet de toujours récupérer l'image docker à chaque lancement de la task
+    networks:
+      - name: "{{proxy_network}}" # Réseau entre le proxy et le backend

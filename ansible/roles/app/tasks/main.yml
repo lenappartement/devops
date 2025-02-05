@@ -6,6 +6,8 @@
     name: backend
     image: lenappartement/backend:latest
     pull: yes # Permet de toujours récupérer l'image docker à chaque lancement de la task
+    ports:
+      - "8080:8080" # Expose le port 80 pour y accéder depuis le navigateur
     env_file: /home/admin/.env # Fichier .env pour récupérer les variables d'environnement pour connexion à la BDD
     networks:
       - name: "{{database_network}}" # Network entre la BDD et le Backend

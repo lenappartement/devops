@@ -8,4 +8,5 @@
     - volume
     - database
     - app
+    - frontend
     - proxy
