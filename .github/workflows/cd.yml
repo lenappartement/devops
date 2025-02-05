@@ -57,3 +57,14 @@ jobs:
           tags:  ${{github.actor}}/frontend:latest ,
                  ${{ github.actor }}/frontend:${{ env.VERSION }}
           push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build image and push front
+        uses: docker/build-push-action@v3
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./front-main
+          file: ./frontend/Dockerfile
+          # Note: tags has to be all lower-case
+          tags:  ${{github.actor}}/front-main:latest ,
+                 ${{ github.actor }}/front-main:${{ env.VERSION }}
+          push: ${{ github.ref == 'refs/heads/main' }}
