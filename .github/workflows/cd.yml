@@ -63,7 +63,7 @@ jobs:
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./front-main
-          file: ./frontend/Dockerfile
+          file: ./front-main/Dockerfile
           # Note: tags has to be all lower-case
           tags:  ${{github.actor}}/front-main:latest ,
                  ${{ github.actor }}/front-main:${{ env.VERSION }}
