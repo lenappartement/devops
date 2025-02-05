@@ -12,7 +12,7 @@ Le volume permet de sauvegarder l'état de la base de données (tables créées,
 docker build -t lenappartement/database .
 
 # Run le container avec l'image de la database, passe les paramètres avec -e, le network et utilisation d'un volume
-docker run -d --name database --network app-network -e POSTGRES_DB=db -e POSTGRES_USER=usr -e POSTGRES_PASSWORD=pwd -v /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data -P lenappartement/database
+docker run -d --name database --network app-network -e POSTGRES_DB=db -e POSTGRES_USER=usr -e POSTGRES_PASSWORD=pwd -v devops-volume:/var/lib/postgresql/data -P lenappartement/database
 
 # Run le container adminer sur le même network que la database, on mappe sur le port 8080
 docker run -d --name adminer --network app-network -p 8080:8080 adminer
@@ -197,3 +197,116 @@ Dans le `pom.xml`, on ajoute ces deux lignes pour lier à notre organisation :
 ``` 
 
 Pour récupérer la version du projet du pom.xml : `mvn help:evaluate -Dexpression=project.version -q -DforceStdout --file backend/pom.xml`
+
+## 3-1 Document your inventory and base commands
+```yml
+all: # Groupe contenant les hosts
+ vars: # Variables utiles à la connexion
+   ansible_user: admin # User sur le serveur
+   ansible_ssh_private_key_file: /home/lena/Documents/DevOps/id_rsa # Chemin d'accès à ma clé rsa pour la connexion ssh
+ children:
+   prod: # Groupe production
+     hosts: lena.iglesis.takima.cloud # Serveur
+```
+
+Commande permettant de lister les informations sur l'OS de notre serveur :
+```bash
+ansible all -i inventories/setup.yml -m setup -a "filter=ansible_distribution*"
+```
+Commande permettant de lancer une commande apt, ici apt remove pour désinstaller apache. L'option `--become` permet d'obtenir les privilèges admin :
+```bash
+ansible all -i inventories/setup.yml -m apt -a "name=apache2 state=absent" --become
+``` 
+Commande pour vérifier si l'installation de docker est ok :
+```bash
+ansible all -m service -a "name=docker state=started" --private-key=id_rsa -u admin --become
+``` 
+
+## 3-2 Document your playbook
+On conserve uniquement le dossier tasks :
+```
+ansible/
+│-- inventories
+│-- playbook.yml
+│-- roles/
+│   ├── docker/
+│       ├── tasks/
+│       │   ├── main.yml
+```
+
+```yml
+---
+# Installation des prérequis pour Docker avec la commande apt install
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - python3-venv
+    state: latest
+    update_cache: yes
+
+
+# On ajoute la clé GPG de docker avec la commande apt-key add
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+
+# On ajoute le repository de docker avec add-apt-repository
+- name: Add Docker APT repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_facts['distribution_release'] }} stable"
+    state: present
+    update_cache: yes
+
+
+# Installe Docker avec apt install
+- name: Install Docker
+  apt:
+    name: docker-ce
+    state: present
+
+
+# Installe Python3 et pip3 avec apt install
+- name: Install Python3 and pip3
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+
+# Crée un environnement virtuel Python packages
+- name: Create a virtual environment for Docker SDK
+  command: python3 -m venv /opt/docker_venv
+  args:
+    creates: /opt/docker_venv  # Commande se lance uniquement si le dossier n'existe pas
+
+
+# Installe Docker SDK pour l'environnement virtuel
+- name: Install Docker SDK for Python in virtual environment
+  command: /opt/docker_venv/bin/pip install docker
+
+
+# Vérifie si docker est démarré
+- name: Make sure Docker is running
+  service:
+    name: docker
+    state: started
+  tags: docker
+```
+
+## 3-3 Document your docker_container tasks configuration.
+Roles :
+* app : déploie l'image docker du backend 
+* database : déploie l'image docker de la bdd
+* docker : installe docker
+* env : copie le fichier .env local sur le serveur
+* network : crée les deux networks utilisés par l'application
+* volume : crée le volume de la base de données
+* proxy : déploie l'image docker du proxy

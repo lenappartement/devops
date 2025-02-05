@@ -1,0 +1,6 @@
+---
+# tasks file for roles/env
+- name: Copier .env sur le serveur
+  ansible.builtin.copy:
+    src: /home/lena/Documents/DevOps/devops/.env
+    dest: /home/admin/.env

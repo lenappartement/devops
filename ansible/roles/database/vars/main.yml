@@ -1,0 +1,5 @@
+---
+# vars file for roles/database
+docker_network: app-network
+
+docker_volume: devops-volume

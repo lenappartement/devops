@@ -1,0 +1,12 @@
+---
+# tasks file for roles/app
+
+- name: Start backend
+  docker_container:
+    name: backend
+    image: lenappartement/backend:latest
+    pull: yes # Permet de toujours récupérer l'image docker à chaque lancement de la task
+    env_file: /home/admin/.env # Fichier .env pour récupérer les variables d'environnement pour connexion à la BDD
+    networks:
+      - name: "{{database_network}}" # Network entre la BDD et le Backend
+      - name: "{{proxy_network}}" # Network entre le proxy et le Backend

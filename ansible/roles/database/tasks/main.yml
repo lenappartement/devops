@@ -1,0 +1,12 @@
+---
+# tasks file for roles/database
+- name: Start Database
+  docker_container:
+    name: database
+    image: lenappartement/database:latest
+    pull: yes # Permet de toujours récupérer l'image docker à chaque lancement de la task
+    env_file: /home/admin/.env # Fichier .env avec les variables de connexion à la BDD
+    networks:
+      - name: "{{docker_network}}" # Réseau entre la BDD et le Backend
+    volumes:
+      - "{{docker_volume}}:/var/lib/postgresql/data" # Volume pour stocker les données de la BDD

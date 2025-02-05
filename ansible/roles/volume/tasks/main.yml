@@ -1,0 +1,11 @@
+---
+# Install prerequisites for Volume
+# Vérifie si le volume existe déjà 
+- name: check volume
+  command: docker volume inspect "{{docker_volume}}"
+  register: volume_exist
+  failed_when: false
+
+- name: create volume
+  command: docker volume create --name "{{docker_volume}}"
+  when: volume_exist.rc != 0 # Crée le volume si la task précédente à retourné autre chose que 0, si le volume est inexistant

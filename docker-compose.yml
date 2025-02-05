@@ -29,7 +29,7 @@ services:
         networks:
         - app-network
         volumes:
-        - /home/lena/Documents/DevOps/devops/volume:/var/lib/postgresql/data
+        - devops-volume:/var/lib/postgresql/data
         env_file: ".env"
 
     frontend:
@@ -45,3 +45,6 @@ services:
 
 networks:
     app-network:
+
+volumes:
+  devops-volume:

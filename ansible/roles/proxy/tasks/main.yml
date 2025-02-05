@@ -1,0 +1,11 @@
+---
+# tasks file for roles/proxy
+- name: Start proxy
+  docker_container:
+    name: proxy
+    image: lenappartement/frontend:latest
+    pull: yes # Permet de toujours récupérer l'image docker à chaque lancement de la task
+    ports:
+      - "80:80" # Expose le port 80 pour y accéder depuis le navigateur
+    networks:
+      - name: "{{proxy_network}}" # Réseau entre le proxy et le backend

@@ -1,0 +1,11 @@
+---
+# Install prerequisites for Network
+- name: Create network
+  docker_network:
+    name: "{{database_network}}"
+    state: present  # Permet de ne pas recréer le network s'il existe déjà
+
+- name: Create network
+  docker_network:
+    name: "{{proxy_network}}"
+    state: present  # Permet de ne pas recréer le network s'il existe déjà

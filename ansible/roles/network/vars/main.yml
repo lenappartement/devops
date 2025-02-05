@@ -1,0 +1,4 @@
+---
+# vars file for roles/network
+database_network: app-network
+proxy_network: proxy-network

@@ -1,0 +1,3 @@
+---
+# vars file for roles/proxy
+proxy_network: proxy-network

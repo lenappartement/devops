@@ -1,0 +1,8 @@
+all: # Groupe contenant les hosts
+ vars: # Variables utiles à la connexion
+   ansible_user: admin # User sur le serveur
+   ansible_ssh_private_key_file: /home/lena/Documents/DevOps/id_rsa # Chemin d'accès à ma clé rsa pour la connexion ssh
+   ansible_python_interpreter: /usr/bin/python3
+ children:
+   prod: # Groupe production
+     hosts: lena.iglesis.takima.cloud # Serveur
