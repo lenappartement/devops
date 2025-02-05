@@ -14,14 +14,14 @@ services:
         - DB_PASSWORD=${DB_PASSWORD}
         depends_on:
         - database
+        ports:
+        - 8080:8080
         env_file: ".env"
 
     database:
         build:
           context: ./database
           dockerfile: Database.Dockerfile
-        ports:
-        - 5432:5432
         environment:
         - POSTGRES_DB=${DB_NAME}
         - POSTGRES_USER=${DB_USER}
@@ -42,6 +42,14 @@ services:
         - app-network
         depends_on:
         - backend
+        - front-main
+
+    front-main:
+        build:
+          context: ./front-main
+          dockerfile: Dockerfile
+        networks:
+        - app-network
 
 networks:
     app-network:
